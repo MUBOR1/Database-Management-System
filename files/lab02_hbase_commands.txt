@@ -1,0 +1,73 @@
+# ============================================
+# ЛАБОРАТОРНАЯ РАБОТА №2
+# HBase Shell Commands
+# ============================================
+
+# 1. Запуск HBase и оболочки
+# $ ${HBASE_HOME}/bin/start-hbase.sh
+# $ ${HBASE_HOME}/bin/hbase shell
+
+# 2. Проверка версии и статуса
+version
+status
+
+# 3. Создание таблицы wiki
+create 'wiki', 'text'
+
+# 4. Вставка данных
+put 'wiki', 'Home', 'text:', 'Welcome to the wiki!!'
+
+# 5. Чтение данных
+get 'wiki', 'Home'
+get 'wiki', 'Home', 'text:'
+
+# 6. Сканирование таблицы
+scan 'wiki'
+
+# 7. Отключение таблицы для изменения схемы
+disable 'wiki'
+
+# 8. Изменение семейства столбцов (увеличение версий)
+alter 'wiki', {NAME => 'text', VERSIONS => org.apache.hadoop.hbase.HConstants::ALL_VERSIONS}
+
+# 9. Добавление нового семейства столбцов
+alter 'wiki', {NAME => 'revision', VERSIONS => org.apache.hadoop.hbase.HConstants::ALL_VERSIONS}
+
+# 10. Включение таблицы
+enable 'wiki'
+
+# 11. Вставка данных с несколькими столбцами (из скрипта)
+# Выполняется через JRuby скрипт
+
+# 12. Создание таблицы links
+create 'links', {NAME => 'to', VERSIONS => 1, BLOOMFILTER => 'ROWCOL'}, {NAME => 'from', VERSIONS => 1, BLOOMFILTER => 'ROWCOL'}
+
+# 13. Просмотр мета-таблицы
+scan 'hbase:meta', {COLUMNS => ['info:server', 'info:regioninfo']}
+
+# 14. Описание таблиц
+describe 'wiki'
+describe 'links'
+describe 'hbase:meta'
+
+# 15. Подсчёт строк
+count 'wiki', INTERVAL => 100000, CACHE => 10000
+
+# 16. Удаление данных
+delete 'wiki', 'Home', 'text:'
+deleteall 'wiki', 'Home'
+
+# 17. Сжатие и фильтры Блума
+disable 'wiki'
+alter 'wiki', {NAME => 'text', COMPRESSION => 'GZ', BLOOMFILTER => 'ROW'}
+enable 'wiki'
+
+# 18. Создание таблицы foods
+create 'foods', {NAME => 'facts', VERSIONS => 1, COMPRESSION => 'GZ', BLOOMFILTER => 'ROWCOL'}
+
+# 19. Пример запросов к таблице foods
+get 'foods', '1001'
+scan 'foods', {STARTROW => '1000', ENDROW => '2000'}
+
+# 20. Остановка HBase
+# $ ${HBASE_HOME}/bin/stop-hbase.sh
